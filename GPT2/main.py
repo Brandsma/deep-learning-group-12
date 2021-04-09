@@ -13,6 +13,7 @@ import os
 from enum import Enum
 from tqdm import tqdm
 
+
 class DecodingMethods(Enum):
     GREEDY_SEARCH = 0
     BEAM_SEARCH = 1
@@ -22,17 +23,20 @@ class DecodingMethods(Enum):
     RANDOM_SAMPLING = 5
 
 
-
-def main(train_path, test_path, val_path, num_of_samples=5, decoding_method = DecodingMethods.TOP_K_SAMPLING):
+def main(train_path, test_path, val_path, num_of_samples=5, decoding_method=DecodingMethods.TOP_K_SAMPLING):
     # Get tokenizer
-    tokenizer = GPT2Tokenizer.from_pretrained("gpt2", padding=True, truncation=True, return_tensors="pt")
+    tokenizer = GPT2Tokenizer.from_pretrained(
+        "gpt2", padding=True, truncation=True, return_tensors="pt")
 
     # Check if it worked
-    print('vocabulary size: %d, max squence length: %d' % (tokenizer.vocab_size, tokenizer.model_max_length))
-    print('tokenize sequence:', tokenizer('Republicans and Democrats have both created our economic problems'))
+    print('vocabulary size: %d, max squence length: %d' %
+          (tokenizer.vocab_size, tokenizer.model_max_length))
+    print('tokenize sequence:', tokenizer(
+        'Republicans and Democrats have both created our economic problems'))
 
     # Data collator for separating into batches
-    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
+    data_collator = DataCollatorForLanguageModeling(
+        tokenizer=tokenizer, mlm=False)
 
     # Create all datasets
     train_dataset = TextDataset(
@@ -53,7 +57,8 @@ def main(train_path, test_path, val_path, num_of_samples=5, decoding_method = De
 
     # Expand the tokenizer and model with special tokens
     # Add beginning of sentence, end of sentence and padding tokens for a better dataset
-    special_tokens_dict = {'bos_token': '<BOS>', 'eos_token': '<EOS>', 'pad_token': '<PAD>'}
+    special_tokens_dict = {'bos_token': '<BOS>',
+                           'eos_token': '<EOS>', 'pad_token': '<PAD>'}
     num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
     model.resize_token_embeddings(len(tokenizer))
 
@@ -66,20 +71,21 @@ def main(train_path, test_path, val_path, num_of_samples=5, decoding_method = De
 
     # Training the transformer model
     training_args = TrainingArguments(
-        output_dir = output_folder + "model", # the output directory for the model predictions and checkpoints
-        overwrite_output_dir = True, # overwrite the content of the output directory
-        per_device_train_batch_size = 4, # the batch size for training
-        per_device_eval_batch_size = 4, # the batch size for evaluation
-        learning_rate = 5e-5, # defaults to 5e-5
-        num_train_epochs = 3, # total number of training epochs to perform
+        # the output directory for the model predictions and checkpoints
+        output_dir=output_folder + "model",
+        overwrite_output_dir=True,  # overwrite the content of the output directory
+        per_device_train_batch_size=4,  # the batch size for training
+        per_device_eval_batch_size=4,  # the batch size for evaluation
+        learning_rate=5e-5,  # defaults to 5e-5
+        num_train_epochs=3,  # total number of training epochs to perform
     )
 
     trainer = Trainer(
-        model = model,
-        args = training_args,
+        model=model,
+        args=training_args,
         data_collator=data_collator,
-        train_dataset = train_dataset,
-        eval_dataset = test_dataset
+        train_dataset=train_dataset,
+        eval_dataset=test_dataset
     )
 
     trainer.train()
@@ -103,8 +109,10 @@ def main(train_path, test_path, val_path, num_of_samples=5, decoding_method = De
         for _ in tqdm(range(num_of_samples)):
             f.write(generator_methods[decoding_method]())
 
-if __name__=="__main__":
-    train_path = "../train.txt"
-    test_path = "../test.txt"
-    val_path = "../validation.txt"
-    main(train_path, test_path, val_path, num_of_samples=10, decoding_method=DecodingMethods.BEAM_SEARCH)
+
+if __name__ == "__main__":
+    train_path = "../Dataset/train.txt"
+    test_path = "../Dataset/test.txt"
+    val_path = "../Dataset/validation.txt"
+    main(train_path, test_path, val_path, num_of_samples=10,
+         decoding_method=DecodingMethods.BEAM_SEARCH)

@@ -9,10 +9,6 @@ def load_data(filename):
     return df
 
 
-def preprocessing(df):
-    pass
-
-
 def train(input_file: str):
     df = load_data(input_file)
     cur_text = ""
@@ -40,16 +36,15 @@ def predict(word_count: int = 5):
     if data_model is None:
         print("Error: data model did not load")
 
-    with open("./markov_output_starting_with_HUGE.txt", "w", encoding="utf-8") as f:
+    with open("./markov_output.txt", "w", encoding="utf-8") as f:
         for idx in range(word_count):
             print(str(idx + 1) + "/" + str(word_count))
-            f.write(data_model.make_sentence_with_start(
-                "HUGE", strict=False))
+            f.write(data_model.make_short_sentence(280, min_char=100))
             f.write('\n')
 
 
 if __name__ == "__main__":
-    filename = "../all.csv"
+    filename = "../Dataset/all.csv"
     IsTraining = False
 
     if IsTraining:
