@@ -1,0 +1,14 @@
+    per_device_train_batch_size = 32, # the batch size for training
+    per_device_eval_batch_size = 32, # the batch size for evaluation
+    learning_rate = 5e-5, # defaults to 5e-5
+    warmup_steps=500, # number of warmup steps for learning rate scheduler
+    num_train_epochs = 100, # total number of training epochs to perform
+    logging_dir='data/logs',
+    weight_decay=0.01,               # strength of weight decay
+
+
+
+Added tokens: special_tokens_dict = {'bos_token': '<BOS>', 'eos_token': '<EOS>', 'pad_token': '<PAD>'}
+
+Dataset input: block_size=128
+vocabulary size: 50257
